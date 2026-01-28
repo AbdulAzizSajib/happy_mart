@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: {
@@ -27,15 +28,17 @@ export function ProductCard({ product }: ProductCardProps) {
       )}
 
       {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </div>
+      <Link href={`/product-details/${product.id}`}>
+        <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </div>
+      </Link>
 
       {/* Product Details */}
       <div className="p-4">
