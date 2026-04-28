@@ -255,13 +255,13 @@ const Navbar = ({ className }: NavbarProps) => {
 
               {/* Dropdown Menu */}
               <div
-                className="absolute left-0 top-full pt-2 z-50"
+                className="absolute left-0 top-full pt-1.5 z-50"
                 onMouseEnter={() => setIsCategoryOpen(true)}
                 onMouseLeave={() => setIsCategoryOpen(false)}
               >
                 <div
                   className={cn(
-                    "bg-white shadow-lg rounded-lg min-w-70 overflow-hidden transition-all duration-300 ease-in-out",
+                    "bg-white shadow-lg rounded-b-lg min-w-75 overflow-hidden transition-all duration-300 ease-in-out",
                     showDropdown
                       ? "opacity-100 visible max-h-150"
                       : "opacity-0 invisible max-h-0",
