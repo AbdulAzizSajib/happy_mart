@@ -19,49 +19,56 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-lg transition-shadow group">
-      {/* Discount Badge */}
+    <div className="relative bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-lg transition-shadow group">
+      {/* Discount Badge - Ribbon Style */}
       {product.discount && (
-        <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-          ৳{product.discount} OFF
+        <div
+          className="absolute top-0 left-3 z-10 bg-red-600 text-white text-[11px] font-bold leading-tight px-2 pt-1.5 pb-3 text-center"
+          style={{
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%)",
+          }}
+        >
+          ৳{product.discount}
+          <br />
+          OFF
         </div>
       )}
 
       {/* Product Image */}
       <Link href={`/product-details/${product.id}`}>
-        <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+        <div className="relative aspect-square overflow-hidden bg-white dark:bg-zinc-800">
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-contain p-3 group-hover:scale-105 transition-transform duration-300 rounded-3xl"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
       </Link>
 
       {/* Product Details */}
-      <div className="p-4">
+      <div className="p-4 text-center">
         {/* Delivery Time */}
         <p className="text-xs text-zinc-500 dark:text-zinc-400 italic mb-2">
           Delivery {product.deliveryTime}
         </p>
 
         {/* Product Name */}
-        <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-3 line-clamp-2 min-h-[40px]">
+        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3 line-clamp-2 min-h-10">
           {product.name}
         </h3>
 
         {/* Price Section */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg font-bold text-red-600">
-            ৳{product.price}
-          </span>
+        <div className="flex items-center justify-center gap-2 mb-4">
           {product.originalPrice && (
             <span className="text-sm text-zinc-400 line-through">
               ৳{product.originalPrice}
             </span>
           )}
+          <span className="text-lg font-bold text-red-600">
+            ৳{product.price}
+          </span>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
             {product.unit}
           </span>

@@ -60,7 +60,12 @@ export function CategoryCarousel({
   }, [api]);
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div
+      className={cn(
+        "relative w-full md:ml-auto md:max-w-[calc(100%-296px)]",
+        className,
+      )}
+    >
       <Carousel
         setApi={setApi}
         opts={{

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Menu,
   MapPin,
@@ -20,6 +20,7 @@ import {
   Pencil,
   Gamepad2,
   Smartphone,
+  LucideBriefcaseMedical,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -45,6 +46,7 @@ const categories = [
   { title: "Stationeries", icon: Pencil, url: "#" },
   { title: "Toys & Sports", icon: Gamepad2, url: "#" },
   { title: "Gadget", icon: Smartphone, url: "#" },
+  { title: "Medicine", icon: LucideBriefcaseMedical, url: "#" },
 ];
 
 const navLinks = [
@@ -61,7 +63,20 @@ interface NavbarProps {
 
 const Navbar = ({ className }: NavbarProps) => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtTop(window.scrollY <= 10);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const showDropdown = isAtTop || isCategoryOpen;
 
   return (
     <header className={cn("w-full sticky top-0 z-50", className)}>
@@ -101,6 +116,15 @@ const Navbar = ({ className }: NavbarProps) => {
               </div>
             </div>
 
+            {/* Download App Button - Hidden on mobile */}
+            <Button
+              variant="ghost"
+              className="hidden md:flex items-center gap-2 border text-black bg-white px-4 py-2 h-auto"
+            >
+              <Download className="w-4 h-4" />
+              <span className="text-sm">Download App Now</span>
+            </Button>
+
             {/* Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3">
               {/* Language Toggle */}
@@ -112,13 +136,15 @@ const Navbar = ({ className }: NavbarProps) => {
               </Button>
 
               {/* Sign In */}
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2 border hover:text-black text-white  px-4 py-2 h-auto"
-              >
-                <User className="w-4 h-4" />
-                <span className="text-sm">Sign in / Sign up</span>
-              </Button>
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 border hover:text-black text-white  px-4 py-2 h-auto"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="text-sm">Sign in / Sign up</span>
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -192,10 +218,12 @@ const Navbar = ({ className }: NavbarProps) => {
 
                   {/* Mobile Auth */}
                   <div className="border-t pt-4 mt-4 space-y-2">
-                    <Button className="w-full bg-[#00A651] hover:bg-[#008f46] text-white">
-                      <User className="w-4 h-4 mr-2" />
-                      Sign in / Sign up
-                    </Button>
+                    <Link href="/login">
+                      <Button className="w-full bg-[#00A651] hover:bg-[#008f46] text-white">
+                        <User className="w-4 h-4 mr-2" />
+                        Sign in / Sign up
+                      </Button>
+                    </Link>
                     <Button variant="outline" className="w-full">
                       <Download className="w-4 h-4 mr-2" />
                       Download App
@@ -209,13 +237,13 @@ const Navbar = ({ className }: NavbarProps) => {
       </div>
 
       {/* Secondary Nav Bar - Yellow/White */}
-      <div className="bg-[#FFD700] border-b">
-        <div className="container mx-auto px-4">
+      <div className="bg-[#FFD700]">
+        <div className="container mx-auto ">
           <div className="flex items-center justify-between ">
             {/* Category Dropdown */}
             <div className="relative">
               <button
-                className="flex items-center gap-2 py-3 px-4 font-semibold text-gray-800 hover:bg-[#e6c200] transition-colors"
+                className="flex items-center gap-2 py-1 px-4 font-semibold text-gray-800 hover:bg-[#e6c200] transition-colors"
                 onMouseEnter={() => setIsCategoryOpen(true)}
                 onMouseLeave={() => setIsCategoryOpen(false)}
                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
@@ -227,28 +255,32 @@ const Navbar = ({ className }: NavbarProps) => {
 
               {/* Dropdown Menu */}
               <div
-                className={cn(
-                  "absolute left-0 top-full bg-white shadow-lg rounded-b-lg min-w-[280px] z-50 transition-all duration-200",
-                  isCategoryOpen
-                    ? "opacity-100 visible"
-                    : "opacity-0 invisible",
-                )}
+                className="absolute left-0 top-full pt-2 z-50"
                 onMouseEnter={() => setIsCategoryOpen(true)}
                 onMouseLeave={() => setIsCategoryOpen(false)}
               >
-                {categories.map((category) => (
-                  <a
-                    key={category.title}
-                    href={category.url}
-                    className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <category.icon className="w-5 h-5 text-gray-600" />
-                      <span className="text-gray-700">{category.title}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
-                  </a>
-                ))}
+                <div
+                  className={cn(
+                    "bg-white shadow-lg rounded-lg min-w-70 overflow-hidden transition-all duration-300 ease-in-out",
+                    showDropdown
+                      ? "opacity-100 visible max-h-150"
+                      : "opacity-0 invisible max-h-0",
+                  )}
+                >
+                  {categories.map((category) => (
+                    <a
+                      key={category.title}
+                      href={category.url}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="flex items-center gap-3">
+                        <category.icon className="w-5 h-5 text-gray-600" />
+                        <span className="text-gray-700">{category.title}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
 

@@ -57,7 +57,12 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
   );
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div
+      className={cn(
+        "relative w-full md:ml-auto md:max-w-[calc(100%-296px)]",
+        className,
+      )}
+    >
       <Carousel
         setApi={setApi}
         opts={{
@@ -76,7 +81,7 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative aspect-[1201/276.22] w-full overflow-hidden">
+              <div className="relative aspect-1201/290 w-full overflow-hidden">
                 <Image
                   src={slide.image}
                   alt={slide.alt}

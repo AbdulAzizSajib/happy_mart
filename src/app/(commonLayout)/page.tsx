@@ -30,52 +30,80 @@ const bannerSlides = [
 const categories = [
   {
     id: 1,
-    name: "Coffee",
+    name: "Food",
     image:
-      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop",
-    href: "/category/coffee",
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop",
+    href: "/category/food",
   },
   {
     id: 2,
-    name: "Ice Cream",
+    name: "Baby Food & Care",
     image:
-      "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=400&h=400&fit=crop",
-    href: "/category/ice-cream",
+      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=400&fit=crop",
+    href: "/category/baby-food-care",
   },
   {
     id: 3,
-    name: "Noodles",
+    name: "Home Cleaning",
     image:
-      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=400&fit=crop",
-    href: "/category/noodles",
+      "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=400&h=400&fit=crop",
+    href: "/category/home-cleaning",
   },
   {
     id: 4,
-    name: "Biscuits",
+    name: "Pet Care",
     image:
-      "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=400&fit=crop",
-    href: "/category/biscuits",
+      "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop",
+    href: "/category/pet-care",
   },
   {
     id: 5,
-    name: "Candy & Chocolate",
+    name: "Beauty & Health",
     image:
-      "https://images.unsplash.com/photo-1548907040-4baa42d10919?w=400&h=400&fit=crop",
-    href: "/category/candy-chocolate",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=400&fit=crop",
+    href: "/category/beauty-health",
   },
   {
     id: 6,
-    name: "Dairy",
+    name: "Fashion & Lifestyle",
     image:
-      "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&h=400&fit=crop",
-    href: "/category/dairy",
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=400&fit=crop",
+    href: "/category/fashion-lifestyle",
   },
   {
     id: 7,
-    name: "Beverages",
+    name: "Home & Kitchen",
     image:
-      "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=400&h=400&fit=crop",
-    href: "/category/beverages",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+    href: "/category/home-kitchen",
+  },
+  {
+    id: 8,
+    name: "Stationeries",
+    image:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=400&fit=crop",
+    href: "/category/stationeries",
+  },
+  {
+    id: 9,
+    name: "Toys & Sports",
+    image:
+      "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop",
+    href: "/category/toys-sports",
+  },
+  {
+    id: 10,
+    name: "Gadget",
+    image:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    href: "/category/gadget",
+  },
+  {
+    id: 11,
+    name: "Medicine",
+    image:
+      "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop",
+    href: "/category/medicine",
   },
 ];
 
