@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import {
   Menu,
   MapPin,
@@ -62,11 +63,24 @@ interface NavbarProps {
 }
 
 const Navbar = ({ className }: NavbarProps) => {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!isHomePage) return;
+
     const handleScroll = () => {
       setIsAtTop(window.scrollY <= 10);
     };
@@ -74,9 +88,10 @@ const Navbar = ({ className }: NavbarProps) => {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
-  const showDropdown = isAtTop || isCategoryOpen;
+  const showDropdown =
+    (isDesktop && isHomePage && isAtTop) || isCategoryOpen;
 
   return (
     <header className={cn("w-full sticky top-0 z-50", className)}>
@@ -237,15 +252,15 @@ const Navbar = ({ className }: NavbarProps) => {
       </div>
 
       {/* Secondary Nav Bar - Yellow/White */}
-      <div className="bg-[#FFD700]">
+      <div className="bg-[#fcbb02]">
         <div className="container mx-auto ">
           <div className="flex items-center justify-between ">
             {/* Category Dropdown */}
             <div className="relative">
               <button
-                className="flex items-center gap-2 py-1 px-4 font-semibold text-gray-800 hover:bg-[#e6c200] transition-colors"
-                onMouseEnter={() => setIsCategoryOpen(true)}
-                onMouseLeave={() => setIsCategoryOpen(false)}
+                className="flex items-center gap-2 py-1 px-4 font-semibold text-gray-800 hover:bg-[#fcbb02] transition-colors"
+                onMouseEnter={() => isDesktop && setIsCategoryOpen(true)}
+                onMouseLeave={() => isDesktop && setIsCategoryOpen(false)}
                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
               >
                 <Menu className="w-5 h-5" />
@@ -256,8 +271,8 @@ const Navbar = ({ className }: NavbarProps) => {
               {/* Dropdown Menu */}
               <div
                 className="absolute left-0 top-full pt-1.5 z-50"
-                onMouseEnter={() => setIsCategoryOpen(true)}
-                onMouseLeave={() => setIsCategoryOpen(false)}
+                onMouseEnter={() => isDesktop && setIsCategoryOpen(true)}
+                onMouseLeave={() => isDesktop && setIsCategoryOpen(false)}
               >
                 <div
                   className={cn(
@@ -290,7 +305,7 @@ const Navbar = ({ className }: NavbarProps) => {
                 <a
                   key={link.title}
                   href={link.url}
-                  className="px-4 py-3 text-sm font-medium text-gray-800 hover:bg-[#e6c200] transition-colors"
+                  className="px-4 py-3 text-sm font-medium text-gray-800 hover:bg-[#F9F1AF] transition-colors"
                 >
                   {link.title}
                 </a>

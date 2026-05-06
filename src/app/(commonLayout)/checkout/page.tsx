@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,10 +14,21 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  Tag,
 } from "lucide-react";
 
-// Dummy cart data
-const initialCartItems = [
+type CartItem = {
+  id: string | number;
+  name: string;
+  image: string;
+  price: number;
+  originalPrice: number | null;
+  quantity: number;
+  unit: string;
+};
+
+// Fallback cart used when no products are passed via URL
+const fallbackCartItems: CartItem[] = [
   {
     id: 1,
     name: "Fresh Chicken Breast (Boneless)",
@@ -59,8 +71,45 @@ const initialCartItems = [
   },
 ];
 
-export default function Checkout() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+// Placeholder image for dynamically passed products (real impl would fetch by id)
+const placeholderImage =
+  "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop";
+
+function buildItemsFromUrl(productsParam: string | null): CartItem[] | null {
+  if (!productsParam) return null;
+  const entries = productsParam.split(",").filter(Boolean);
+  if (entries.length === 0) return null;
+
+  return entries.map((entry) => {
+    const [rawId, rawQty] = entry.split(":");
+    const id = (rawId || "").trim();
+    const quantity = Math.max(1, parseInt(rawQty || "1", 10) || 1);
+    return {
+      id,
+      name: `Product ${id}`,
+      image: placeholderImage,
+      price: 0,
+      originalPrice: null,
+      quantity,
+      unit: "",
+    };
+  });
+}
+
+function CheckoutContent() {
+  const searchParams = useSearchParams();
+  const productsParam = searchParams.get("products");
+  const couponParam = searchParams.get("coupon");
+  const cartOrigin = searchParams.get("cart_origin");
+
+  const urlItems = useMemo(
+    () => buildItemsFromUrl(productsParam),
+    [productsParam],
+  );
+
+  const [cartItems, setCartItems] = useState<CartItem[]>(
+    urlItems ?? fallbackCartItems,
+  );
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -72,7 +121,7 @@ export default function Checkout() {
     note: "",
   });
 
-  const updateQuantity = (id: number, change: number) => {
+  const updateQuantity = (id: string | number, change: number) => {
     setCartItems((items) =>
       items.map((item) =>
         item.id === id
@@ -82,7 +131,7 @@ export default function Checkout() {
     );
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: string | number) => {
     setCartItems((items) => items.filter((item) => item.id !== id));
   };
 
@@ -93,7 +142,6 @@ export default function Checkout() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Calculate totals
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -104,14 +152,21 @@ export default function Checkout() {
     }
     return sum;
   }, 0);
-  const deliveryFee = subtotal >= 500 ? 0 : 60;
-  const total = subtotal + deliveryFee;
+  const couponDiscount = couponParam ? Math.round(subtotal * 0.1) : 0;
+  const deliveryFee = subtotal >= 500 ? 0 : subtotal > 0 ? 60 : 0;
+  const total = Math.max(0, subtotal - couponDiscount + deliveryFee);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10 min-h-screen">
       <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white mb-6">
         Checkout
       </h1>
+
+      {cartOrigin && (
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4">
+          Order source: <span className="font-medium">{cartOrigin}</span>
+        </p>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left Column - Form */}
@@ -273,7 +328,9 @@ export default function Checkout() {
                     <h3 className="text-sm font-medium text-zinc-900 dark:text-white line-clamp-2">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-zinc-500">{item.unit}</p>
+                    {item.unit && (
+                      <p className="text-xs text-zinc-500">{item.unit}</p>
+                    )}
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-sm font-bold text-red-600">
                         ৳{item.price * item.quantity}
@@ -312,6 +369,9 @@ export default function Checkout() {
 
             {/* Cart Items - Desktop */}
             <div className="hidden lg:block space-y-4 mb-6 max-h-80 overflow-y-auto">
+              {cartItems.length === 0 && (
+                <p className="text-sm text-zinc-500">No items in your cart.</p>
+              )}
               {cartItems.map((item) => (
                 <div
                   key={item.id}
@@ -329,7 +389,11 @@ export default function Checkout() {
                     <h3 className="text-sm font-medium text-zinc-900 dark:text-white line-clamp-1">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-zinc-500">{item.unit}</p>
+                    {item.unit ? (
+                      <p className="text-xs text-zinc-500">{item.unit}</p>
+                    ) : (
+                      <p className="text-xs text-zinc-500">ID: {item.id}</p>
+                    )}
                     <div className="flex items-center justify-between mt-1">
                       <div className="flex items-center gap-1">
                         <button
@@ -365,6 +429,24 @@ export default function Checkout() {
               ))}
             </div>
 
+            {/* Coupon Applied */}
+            {couponParam && (
+              <div className="flex items-center gap-3 mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
+                <Tag className="w-4 h-4 text-green-600 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-400">
+                    Coupon applied
+                  </p>
+                  <p className="text-xs text-green-600 dark:text-green-500">
+                    Code: {couponParam}
+                  </p>
+                </div>
+                <span className="text-sm font-semibold text-green-700 dark:text-green-400">
+                  -৳{couponDiscount}
+                </span>
+              </div>
+            )}
+
             {/* Totals */}
             <div className="space-y-3 border-t border-zinc-200 dark:border-zinc-700 pt-4">
               <div className="flex justify-between text-sm">
@@ -378,6 +460,16 @@ export default function Checkout() {
                   <span className="text-green-600">You Save</span>
                   <span className="text-green-600 font-medium">
                     -৳{savings}
+                  </span>
+                </div>
+              )}
+              {couponParam && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-600">
+                    Coupon ({couponParam})
+                  </span>
+                  <span className="text-green-600 font-medium">
+                    -৳{couponDiscount}
                   </span>
                 </div>
               )}
@@ -416,5 +508,13 @@ export default function Checkout() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={null}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

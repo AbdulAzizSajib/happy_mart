@@ -15,6 +15,7 @@ import {
   RotateCcw,
   ChevronRight,
 } from "lucide-react";
+import products from "@/data/products.json";
 
 // Static product data
 const product = {
@@ -131,6 +132,12 @@ const similarProducts = [
     minOrder: 1,
   },
 ];
+
+export async function generateStaticParams() {
+  return products.map((product) => ({
+    id: product.id.toString(),
+  }));
+}
 
 export default async function ProductDetails({
   params,

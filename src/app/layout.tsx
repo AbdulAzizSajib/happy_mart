@@ -9,8 +9,8 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-  title: "Shwapno",
-  description: "AI Powered E-commerce Platform",
+  title: "Happy Mart",
+  // description: "",
 };
 
 export default function RootLayout({
