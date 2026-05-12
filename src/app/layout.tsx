@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -20,7 +21,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.className} antialiased`}>{children}</body>
+      <body className={`${rubik.className} antialiased`}>
+        {children}
+        <Toaster
+          position="top-center"
+          richColors
+          closeButton
+          toastOptions={{
+            style: {
+              minWidth: "580px",
+              padding: "16px 20px",
+              borderRadius: "14px",
+              fontSize: "15px",
+              fontWeight: 500,
+              boxShadow:
+                "0 10px 40px -10px rgba(0,0,0,0.25), 0 4px 12px -4px rgba(0,0,0,0.1)",
+              border: "1px solid rgba(0,0,0,0.06)",
+              backdropFilter: "blur(12px)",
+            },
+            className: "modern-toast",
+          }}
+        />
+      </body>
     </html>
   );
 }

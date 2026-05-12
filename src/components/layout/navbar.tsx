@@ -1,17 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useSyncExternalStore } from "react";
 import {
   Menu,
   MapPin,
   Search,
   Download,
-  User,
-  Phone,
-  Store,
-  ChevronRight,
+  Package,
   ShoppingBasket,
+  ShoppingCart,
   Baby,
   Home,
   Dog,
@@ -24,10 +21,13 @@ import {
   LucideBriefcaseMedical,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { useCartStore } from "@/store/cart-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MegaMenu } from "./MegaMenu";
 import {
   Sheet,
   SheetContent,
@@ -63,40 +63,30 @@ interface NavbarProps {
 }
 
 const Navbar = ({ className }: NavbarProps) => {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
 
-  useEffect(() => {
-    const mql = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mql.matches);
-    update();
-    mql.addEventListener("change", update);
-    return () => mql.removeEventListener("change", update);
-  }, []);
-
-  useEffect(() => {
-    if (!isHomePage) return;
-
-    const handleScroll = () => {
-      setIsAtTop(window.scrollY <= 10);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHomePage]);
-
-  const showDropdown =
-    (isDesktop && isHomePage && isAtTop) || isCategoryOpen;
+  const submitSearch = (q: string, closeMobileMenu = false) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    if (closeMobileMenu) setMobileMenuOpen(false);
+    router.push(`/products?search=${encodeURIComponent(trimmed)}`);
+  };
+  const hydrated = useSyncExternalStore(
+    (cb) => useCartStore.persist.onFinishHydration(cb),
+    () => useCartStore.persist.hasHydrated(),
+    () => false,
+  );
+  const cartCount = useCartStore((s) =>
+    s.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
 
   return (
     <header className={cn("w-full sticky top-0 z-50", className)}>
       {/* Top Bar - Red Background */}
-      <div className="bg-[#E31E25] text-white">
+      <div className="bg-brand-primary text-white">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-3 gap-4">
             {/* Logo */}
@@ -118,49 +108,73 @@ const Navbar = ({ className }: NavbarProps) => {
             </Button>
 
             {/* Search Bar - Hidden on mobile */}
-            <div className="hidden md:flex flex-1 max-w-xl">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submitSearch(searchQuery);
+              }}
+              className="hidden md:flex flex-1 max-w-3xl"
+            >
               <div className="relative w-full">
                 <Input
                   type="text"
                   placeholder="Search your products"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-10 pl-4 pr-12 rounded-md border-0 bg-white text-gray-900"
                 />
-                <button className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-[#FFD700] rounded-r-md">
-                  <Search className="w-5 h-5 text-gray-700" />
+                <button
+                  type="submit"
+                  aria-label="Search"
+                  className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-brand-accent rounded-r-md"
+                >
+                  <Search className="w-5 h-5 text-zinc-800" />
                 </button>
               </div>
-            </div>
-
-            {/* Download App Button - Hidden on mobile */}
-            <Button
-              variant="ghost"
-              className="hidden md:flex items-center gap-2 border text-black bg-white px-4 py-2 h-auto"
-            >
-              <Download className="w-4 h-4" />
-              <span className="text-sm">Download App Now</span>
-            </Button>
-
+            </form>
             {/* Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3">
-              {/* Language Toggle */}
-              <Button
-                variant="ghost"
-                className="border text-white  rounded-md px-4 py-2 h-auto"
-              >
-                <span className="text-sm font-medium">বাংলা</span>
-              </Button>
+              {/* Cart */}
+              <Link href="/checkout" aria-label="Cart">
+                <Button
+                  variant="ghost"
+                  className="relative flex items-center gap-2 border hover:text-black text-white px-3 py-2 h-auto"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="text-sm">Cart</span>
+                  {hydrated && cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-brand-accent text-zinc-800 text-xs font-bold flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
 
-              {/* Sign In */}
-              <Link href="/login">
+              {/* Track Order */}
+              <Link href="/track-order">
                 <Button
                   variant="ghost"
                   className="flex items-center gap-2 border hover:text-black text-white  px-4 py-2 h-auto"
                 >
-                  <User className="w-4 h-4" />
-                  <span className="text-sm">Sign in / Sign up</span>
+                  <Package className="w-4 h-4" />
+                  <span className="text-sm">Track Order</span>
                 </Button>
               </Link>
             </div>
+
+            {/* Mobile Cart */}
+            <Link
+              href="/checkout"
+              aria-label="Cart"
+              className="lg:hidden relative inline-flex items-center justify-center w-10 h-10 text-white"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {hydrated && cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 rounded-full bg-brand-accent text-white text-xs font-bold flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
 
             {/* Mobile Menu Button */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -174,26 +188,38 @@ const Navbar = ({ className }: NavbarProps) => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-75 p-0">
-                <SheetHeader className="p-4 bg-[#E31E25] text-white">
+                <SheetHeader className="p-4 bg-brand-primary text-white">
                   <SheetTitle className="text-white">Menu</SheetTitle>
                 </SheetHeader>
                 <div className="p-4">
                   {/* Mobile Search */}
-                  <div className="relative mb-4">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      submitSearch(mobileSearchQuery, true);
+                    }}
+                    className="relative mb-4"
+                  >
                     <Input
                       type="text"
                       placeholder="Search your products"
+                      value={mobileSearchQuery}
+                      onChange={(e) => setMobileSearchQuery(e.target.value)}
                       className="w-full h-10 pl-4 pr-12 rounded-md border bg-white"
                     />
-                    <button className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-[#FFD700] rounded-r-md">
+                    <button
+                      type="submit"
+                      aria-label="Search"
+                      className="absolute right-0 top-0 h-10 w-10 flex items-center justify-center bg-brand-accent rounded-r-md"
+                    >
                       <Search className="w-5 h-5 text-gray-700" />
                     </button>
-                  </div>
+                  </form>
 
                   {/* Mobile Location */}
                   <Button
                     variant="outline"
-                    className="w-full flex items-center justify-center gap-2 mb-4 bg-[#00A651] hover:bg-[#008f46] text-white border-0"
+                    className="w-full flex items-center justify-center gap-2 mb-4 bg-brand-success hover:bg-brand-success-hover text-white border-0"
                   >
                     <MapPin className="w-4 h-4" />
                     <span>Select delivery location</span>
@@ -231,12 +257,15 @@ const Navbar = ({ className }: NavbarProps) => {
                     </div>
                   </div>
 
-                  {/* Mobile Auth */}
+                  {/* Mobile Actions */}
                   <div className="border-t pt-4 mt-4 space-y-2">
-                    <Link href="/login">
-                      <Button className="w-full bg-[#00A651] hover:bg-[#008f46] text-white">
-                        <User className="w-4 h-4 mr-2" />
-                        Sign in / Sign up
+                    <Link
+                      href="/track-order"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button className="w-full bg-brand-success hover:bg-brand-success-hover text-white">
+                        <Package className="w-4 h-4 mr-2" />
+                        Track Order
                       </Button>
                     </Link>
                     <Button variant="outline" className="w-full">
@@ -251,87 +280,8 @@ const Navbar = ({ className }: NavbarProps) => {
         </div>
       </div>
 
-      {/* Secondary Nav Bar - Yellow/White */}
-      <div className="bg-[#fcbb02]">
-        <div className="container mx-auto ">
-          <div className="flex items-center justify-between ">
-            {/* Category Dropdown */}
-            <div className="relative">
-              <button
-                className="flex items-center gap-2 py-1 px-4 font-semibold text-gray-800 hover:bg-[#fcbb02] transition-colors"
-                onMouseEnter={() => isDesktop && setIsCategoryOpen(true)}
-                onMouseLeave={() => isDesktop && setIsCategoryOpen(false)}
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              >
-                <Menu className="w-5 h-5" />
-                <span className="hidden sm:inline">SHOP BY CATEGORY</span>
-                <span className="sm:hidden">CATEGORIES</span>
-              </button>
-
-              {/* Dropdown Menu */}
-              <div
-                className="absolute left-0 top-full pt-1.5 z-50"
-                onMouseEnter={() => isDesktop && setIsCategoryOpen(true)}
-                onMouseLeave={() => isDesktop && setIsCategoryOpen(false)}
-              >
-                <div
-                  className={cn(
-                    "bg-white shadow-lg rounded-b-lg min-w-75 overflow-hidden transition-all duration-300 ease-in-out",
-                    showDropdown
-                      ? "opacity-100 visible max-h-150"
-                      : "opacity-0 invisible max-h-0",
-                  )}
-                >
-                  {categories.map((category) => (
-                    <a
-                      key={category.title}
-                      href={category.url}
-                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                    >
-                      <div className="flex items-center gap-3">
-                        <category.icon className="w-5 h-5 text-gray-600" />
-                        <span className="text-gray-700">{category.title}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Nav Links - Hidden on mobile */}
-            <nav className="hidden lg:flex items-center">
-              {navLinks.map((link) => (
-                <a
-                  key={link.title}
-                  href={link.url}
-                  className="px-4 py-3 text-sm font-medium text-gray-800 hover:bg-[#F9F1AF] transition-colors"
-                >
-                  {link.title}
-                </a>
-              ))}
-            </nav>
-
-            {/* Right Links */}
-            <div className="hidden md:flex items-center gap-4">
-              <a
-                href="#"
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
-              >
-                <Store className="w-4 h-4" />
-                <span>Our outlets</span>
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
-              >
-                <Phone className="w-4 h-4" />
-                <span>Help line</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Mega Menu */}
+      <MegaMenu />
     </header>
   );
 };

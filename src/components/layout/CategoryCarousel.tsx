@@ -60,12 +60,7 @@ export function CategoryCarousel({
   }, [api]);
 
   return (
-    <div
-      className={cn(
-        "relative w-full md:ml-auto md:max-w-[calc(100%-296px)]",
-        className,
-      )}
-    >
+    <div className={cn("relative w-full px-4", className)}>
       <Carousel
         setApi={setApi}
         opts={{
@@ -87,7 +82,7 @@ export function CategoryCarousel({
                     className="object-cover transition-transform duration-300 group-hover:scale-105 w-full h-full"
                   />
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
-                    <span className="inline-block rounded-full bg-yellow-400 px-8 py-2 text-sm font-semibold text-black transition-colors group-hover:bg-yellow-500 whitespace-nowrap">
+                    <span className="inline-block rounded-full bg-brand-primary px-8 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-brand-primary-hover whitespace-nowrap">
                       {category.name}
                     </span>
                   </div>
@@ -103,7 +98,7 @@ export function CategoryCarousel({
         onClick={scrollPrev}
         disabled={!canScrollPrev}
         className={cn(
-          "absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-sm bg-yellow-400 text-black shadow-md transition-all hover:bg-yellow-500",
+          "absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-sm bg-brand-primary text-white shadow-md transition-all hover:bg-brand-primary-hover",
           !canScrollPrev && "opacity-50 cursor-not-allowed",
         )}
         aria-label="Previous categories"
@@ -114,7 +109,7 @@ export function CategoryCarousel({
         onClick={scrollNext}
         disabled={!canScrollNext}
         className={cn(
-          "absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-sm bg-yellow-400 text-black shadow-md transition-all hover:bg-yellow-500",
+          "absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-sm bg-brand-primary text-white shadow-md transition-all hover:bg-brand-primary-hover",
           !canScrollNext && "opacity-50 cursor-not-allowed",
         )}
         aria-label="Next categories"

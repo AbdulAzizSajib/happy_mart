@@ -57,12 +57,7 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
   );
 
   return (
-    <div
-      className={cn(
-        "relative w-full md:ml-auto md:max-w-[calc(100%-296px)]",
-        className,
-      )}
-    >
+    <div className={cn("relative w-full", className)}>
       <Carousel
         setApi={setApi}
         opts={{
@@ -81,12 +76,12 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative aspect-1201/290 w-full overflow-hidden">
+              <div className="relative aspect-1201/290 w-full overflow-hidden ">
                 <Image
                   src={slide.image}
                   alt={slide.alt}
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
                   priority
                 />
               </div>
@@ -95,7 +90,7 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
         </CarouselContent>
 
         {/* Navigation Arrows */}
-        <button
+        {/* <button
           onClick={scrollPrev}
           className="absolute left-2 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-sm bg-yellow-400 text-black shadow-md transition-colors hover:bg-yellow-500 md:left-4"
           aria-label="Previous slide"
@@ -108,10 +103,10 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
           aria-label="Next slide"
         >
           <ChevronRight className="h-6 w-6" />
-        </button>
+        </button> */}
 
         {/* Dot Indicators */}
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+        {/* <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
           {Array.from({ length: count }).map((_, index) => (
             <button
               key={index}
@@ -123,7 +118,7 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
-        </div>
+        </div> */}
       </Carousel>
     </div>
   );

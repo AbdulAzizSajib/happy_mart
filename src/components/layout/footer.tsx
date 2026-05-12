@@ -126,17 +126,17 @@ const Footer = ({
             {/* Contact Info */}
             <ul className="mt-6 space-y-3 text-sm text-zinc-400">
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#FFD700]" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-primary" />
                 <span>House 12, Road 5, Dhaka 1205, Bangladesh</span>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 shrink-0 text-[#FFD700]" />
+                <Phone className="h-4 w-4 shrink-0 text-brand-primary" />
                 <a href="tel:+8801700000000" className="hover:text-white">
                   +880 1700-000000
                 </a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 shrink-0 text-[#FFD700]" />
+                <Mail className="h-4 w-4 shrink-0 text-brand-primary" />
                 <a
                   href="mailto:support@happymart.com"
                   className="hover:text-white"
@@ -181,7 +181,7 @@ const Footer = ({
                   key={social.label}
                   href={social.url}
                   aria-label={social.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-zinc-300 transition-colors hover:bg-[#E31E25] hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-zinc-300 transition-colors hover:bg-brand-primary hover:text-white"
                 >
                   <social.icon className="h-4 w-4" />
                 </a>

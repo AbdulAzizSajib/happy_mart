@@ -1,88 +1,131 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useCartStore } from "@/store/cart-store";
+import { resolveImageUrl } from "@/lib/api";
+import type { ApiProduct } from "@/types/api";
 
 interface ProductCardProps {
-  product: {
-    id: number;
-    name: string;
-    image: string;
-    price: number;
-    originalPrice?: number | null;
-    discount?: number | null;
-    deliveryTime: string;
-    unit: string;
-    minOrder?: number | null;
-  };
+  product: ApiProduct;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
-  return (
-    <div className="relative bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-lg transition-shadow group">
-      {/* Discount Badge - Ribbon Style */}
-      {product.discount && (
-        <div
-          className="absolute top-0 left-3 z-10 bg-red-600 text-white text-[11px] font-bold leading-tight px-2 pt-1.5 pb-3 text-center"
-          style={{
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%)",
-          }}
-        >
-          ৳{product.discount}
-          <br />
-          OFF
-        </div>
-      )}
+const fallbackImage =
+  "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop";
 
-      {/* Product Image */}
-      <Link href={`/product-details/${product.id}`}>
-        <div className="relative aspect-square overflow-hidden bg-white dark:bg-zinc-800">
+export function ProductCard({ product }: ProductCardProps) {
+  const addItem = useCartStore((s) => s.addItem);
+
+  const defaultVariant = product.Variants?.[0] ?? null;
+  const price = defaultVariant?.SellingPrice ?? null;
+  const image = resolveImageUrl(defaultVariant?.Images?.[0]) || fallbackImage;
+  const inStock = defaultVariant ? defaultVariant.Stock > 0 : false;
+  const hasPrice = price !== null;
+
+  const handleAdd = () => {
+    if (!defaultVariant || !hasPrice) {
+      toast.error("This product is unavailable.");
+      return;
+    }
+    addItem({
+      productCode: product.ProductCode,
+      variantId: defaultVariant.VariantId,
+      name: product.ProductName,
+      sku: defaultVariant.SKU,
+      price: defaultVariant.SellingPrice,
+      image,
+      color: defaultVariant.Color,
+      size: defaultVariant.Size,
+    });
+    toast.success(`${product.ProductName} added to bag`);
+  };
+
+  return (
+    <div className="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      {/* Image */}
+      <Link
+        href={`/product-details/${product.ProductCode}`}
+        className="relative block"
+      >
+        <div className="relative w-60 h-80 mx-auto  overflow-hidden bg-zinc-50 dark:bg-zinc-800">
           <Image
-            src={product.image}
-            alt={product.name}
+            src={image}
+            alt={product.ProductName}
             fill
-            className="object-contain p-3 group-hover:scale-105 transition-transform duration-300 rounded-3xl"
+            className="object-cover  transition-transform duration-500 group-hover:scale-110 "
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          {/* Floating wishlist button on hover */}
+          <button
+            type="button"
+            aria-label="Add to wishlist"
+            onClick={(e) => e.preventDefault()}
+            className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur text-zinc-700 dark:text-zinc-200 shadow-md opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:text-brand-primary"
+          >
+            <Heart className="h-4 w-4" />
+          </button>
         </div>
       </Link>
 
-      {/* Product Details */}
-      <div className="p-4 text-center">
-        {/* Delivery Time */}
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 italic mb-2">
-          Delivery {product.deliveryTime}
-        </p>
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-4">
+        <Link
+          href={`/product-details/${product.ProductCode}`}
+          className="block"
+        >
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white line-clamp-2 min-h-10 group-hover:text-brand-primary transition-colors">
+            {product.ProductName}
+          </h3>
+        </Link>
 
-        {/* Product Name */}
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3 line-clamp-2 min-h-10">
-          {product.name}
-        </h3>
+        {/* Variant meta */}
+        {(defaultVariant?.Color || defaultVariant?.Size) && (
+          <div className="mt-2 flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+            {defaultVariant?.Color && (
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className="inline-block h-2.5 w-2.5 rounded-full border border-zinc-200 dark:border-zinc-700"
+                  style={{ backgroundColor: defaultVariant.Color }}
+                  aria-hidden
+                />
+                <span className="uppercase tracking-wide">
+                  {defaultVariant.Color}
+                </span>
+              </span>
+            )}
+            {defaultVariant?.Color && defaultVariant?.Size && (
+              <span className="text-zinc-300">·</span>
+            )}
+            {defaultVariant?.Size && (
+              <span className="uppercase tracking-wide">
+                Size {defaultVariant.Size}
+              </span>
+            )}
+          </div>
+        )}
 
-        {/* Price Section */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-          {product.originalPrice && (
-            <span className="text-sm text-zinc-400 line-through">
-              ৳{product.originalPrice}
+        {/* Price */}
+        <div className="mt-3 flex items-baseline gap-2">
+          {hasPrice ? (
+            <span className="text-lg font-bold text-brand-primary">
+              ৳{price}
             </span>
-          )}
-          <span className="text-lg font-bold text-red-600">
-            ৳{product.price}
-          </span>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {product.unit}
-          </span>
-          {product.minOrder && (
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              (Min. {product.minOrder})
-            </span>
+          ) : (
+            <span className="text-sm text-zinc-500">Price unavailable</span>
           )}
         </div>
 
-        {/* Add to Bag Button */}
-        <Button className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full">
-          <Plus className="w-4 h-4 mr-1" />
-          Add to Bag
+        {/* CTA */}
+        <Button
+          onClick={handleAdd}
+          disabled={!hasPrice || !inStock}
+          className="mt-4 w-full h-10 rounded-full bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:hover:shadow-sm capitalize"
+        >
+          <ShoppingBag className="w-4 h-4 mr-1.5" />
+          {inStock ? "Add to Cart" : "Out of stock"}
         </Button>
       </div>
     </div>
