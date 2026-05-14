@@ -50,20 +50,20 @@ export function ProductCard({ product }: ProductCardProps) {
         href={`/product-details/${product.ProductCode}`}
         className="relative block"
       >
-        <div className="relative w-60 h-80 mx-auto  overflow-hidden bg-zinc-50 dark:bg-zinc-800">
+        <div className="relative w-full aspect-3/4 overflow-hidden bg-zinc-50 dark:bg-zinc-800">
           <Image
             src={image}
             alt={product.ProductName}
             fill
-            className="object-cover  transition-transform duration-500 group-hover:scale-110 "
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
           />
           {/* Floating wishlist button on hover */}
           <button
             type="button"
             aria-label="Add to wishlist"
             onClick={(e) => e.preventDefault()}
-            className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur text-zinc-700 dark:text-zinc-200 shadow-md opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:text-brand-primary"
+            className="absolute top-2 right-2 sm:top-3 sm:right-3 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur text-zinc-700 dark:text-zinc-200 shadow-md opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:text-brand-primary"
           >
             <Heart className="h-4 w-4" />
           </button>
@@ -71,19 +71,19 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4">
         <Link
           href={`/product-details/${product.ProductCode}`}
           className="block"
         >
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white line-clamp-2 min-h-10 group-hover:text-brand-primary transition-colors">
+          <h3 className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white line-clamp-2 min-h-9 sm:min-h-10 group-hover:text-brand-primary transition-colors">
             {product.ProductName}
           </h3>
         </Link>
 
         {/* Variant meta */}
         {(defaultVariant?.Color || defaultVariant?.Size) && (
-          <div className="mt-2 flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <div className="mt-2 hidden sm:flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
             {defaultVariant?.Color && (
               <span className="inline-flex items-center gap-1.5">
                 <span
@@ -108,13 +108,15 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Price */}
-        <div className="mt-3 flex items-baseline gap-2">
+        <div className="mt-2 sm:mt-3 flex items-baseline gap-2">
           {hasPrice ? (
-            <span className="text-lg font-bold text-brand-primary">
+            <span className="text-base sm:text-lg font-bold text-brand-primary">
               ৳{price}
             </span>
           ) : (
-            <span className="text-sm text-zinc-500">Price unavailable</span>
+            <span className="text-xs sm:text-sm text-zinc-500">
+              Price unavailable
+            </span>
           )}
         </div>
 
@@ -122,10 +124,12 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button
           onClick={handleAdd}
           disabled={!hasPrice || !inStock}
-          className="mt-4 w-full h-10 rounded-full bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:hover:shadow-sm capitalize"
+          className="mt-3 sm:mt-4 w-full h-9 sm:h-10 rounded-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:hover:shadow-sm capitalize px-2"
         >
-          <ShoppingBag className="w-4 h-4 mr-1.5" />
-          {inStock ? "Add to Cart" : "Out of stock"}
+          <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 shrink-0" />
+          <span className="truncate">
+            {inStock ? "Add to Cart" : "Out of stock"}
+          </span>
         </Button>
       </div>
     </div>

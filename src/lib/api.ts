@@ -3,6 +3,8 @@ import type {
   OrderPayload,
   OrderResponse,
   OrderTrackingResponse,
+  PlantInfo,
+  PlantInfoResponse,
   ProductsResponse,
   SingleProductResponse,
   SuperCategoriesResponse,
@@ -10,12 +12,13 @@ import type {
 } from "@/types/api";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://192.168.90.51:3000";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://ec.mis.digital/api2";
+const IMAGE_BASE_URL = "https://ec.mis.digital";
 
 export function resolveImageUrl(path: string | null | undefined): string {
   if (!path) return "";
   if (/^(https?:)?\/\//.test(path)) return path;
-  return `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+  return `${IMAGE_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -56,12 +59,12 @@ export function fetchProducts(params?: {
   }
   const qs = search.toString();
   return request<ProductsResponse>(
-    `/api/site/all-products-paginated${qs ? `?${qs}` : ""}`,
+    `/site/all-products-paginated${qs ? `?${qs}` : ""}`,
   );
 }
 
 export function fetchSuperCategories(): Promise<SuperCategory[]> {
-  return request<SuperCategoriesResponse>("/api/site/super-category").then(
+  return request<SuperCategoriesResponse>("/site/super-category").then(
     (res) => res.data ?? [],
   );
 }
@@ -72,9 +75,7 @@ export function fetchSuperCategories(): Promise<SuperCategory[]> {
 export async function fetchCategoriesBySuper(
   superCategoryCode: number,
 ): Promise<Category[]> {
-  const raw = await request<unknown>(
-    `/api/site/all-category/${superCategoryCode}`,
-  );
+  const raw = await request<unknown>(`/site/all-category/${superCategoryCode}`);
 
   if (Array.isArray(raw)) return raw as Category[];
   if (raw && typeof raw === "object") {
@@ -89,12 +90,12 @@ export function fetchProductDetail(
   productCode: string,
 ): Promise<SingleProductResponse> {
   return request<SingleProductResponse>(
-    `/api/site/product/${encodeURIComponent(productCode)}`,
+    `/site/product/${encodeURIComponent(productCode)}`,
   );
 }
 
 export function placeOrder(payload: OrderPayload): Promise<OrderResponse> {
-  return request<OrderResponse>("/api/site/order", {
+  return request<OrderResponse>("/site/order", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -102,6 +103,12 @@ export function placeOrder(payload: OrderPayload): Promise<OrderResponse> {
 
 export function trackOrder(saleCode: string): Promise<OrderTrackingResponse> {
   return request<OrderTrackingResponse>(
-    `/api/site/order-tracking?sale_code=${encodeURIComponent(saleCode)}`,
+    `/site/order-tracking?sale_code=${encodeURIComponent(saleCode)}`,
   );
+}
+
+export function fetchPlantInfo(plantCode = "P001"): Promise<PlantInfo> {
+  return request<PlantInfoResponse>(
+    `/site/plant/${encodeURIComponent(plantCode)}`,
+  ).then((res) => res.data);
 }

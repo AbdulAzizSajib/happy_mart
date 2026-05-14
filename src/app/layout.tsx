@@ -10,8 +10,12 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-  title: "Happy Mart",
-  // description: "",
+  title: "FAMLYX BD",
+  description:
+    "Your Everyday Lifestyle Partner | Clothes | Bags | Shoes | Quality Products at Affordable Price",
+  icons: {
+    icon: "/fam.ico",
+  },
 };
 
 export default function RootLayout({

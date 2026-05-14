@@ -103,16 +103,16 @@ export default function Checkout() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10 min-h-screen">
-      <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white mb-6">
+    <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6 md:py-8 lg:py-10 min-h-screen">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white mb-4 sm:mb-6">
         Checkout
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Delivery Address */}
-          <div className="bg-white dark:bg-zinc-900 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-white mb-4">
               Delivery Address
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,8 +191,8 @@ export default function Checkout() {
           </div>
 
           {/* Payment Method */}
-          <div className="bg-white dark:bg-zinc-900 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-white mb-4">
               Payment Method
             </h2>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -247,8 +247,8 @@ export default function Checkout() {
 
         {/* Right Column - Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 sticky top-4">
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg p-4 sm:p-6 lg:sticky lg:top-4">
+            <h2 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-white mb-4">
               Order Summary
             </h2>
 

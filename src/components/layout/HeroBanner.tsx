@@ -76,12 +76,13 @@ export function HeroBanner({ slides, className }: HeroBannerProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative aspect-1201/290 w-full overflow-hidden ">
+              <div className="relative aspect-3/2 sm:aspect-2/1 md:aspect-1201/290 w-full overflow-hidden">
                 <Image
                   src={slide.image}
                   alt={slide.alt}
                   fill
                   className="object-cover object-top"
+                  sizes="100vw"
                   priority
                 />
               </div>

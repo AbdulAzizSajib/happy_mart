@@ -27,15 +27,15 @@ export function HomeProducts() {
   const hasMore = pagination ? pagination.total > products.length : false;
 
   return (
-    <section className="mt-8 py-5">
-      <div className="flex items-end justify-between mb-6 px-4">
-        <h2 className="text-2xl uppercase font-bold text-zinc-900 dark:text-white">
+    <section className="mt-6 sm:mt-8 py-4 sm:py-5">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 px-3 sm:px-4 gap-3">
+        <h2 className="text-lg sm:text-2xl uppercase font-bold text-zinc-900 dark:text-white">
           Trending Right Now
         </h2>
         {hasMore && !loading && !error && (
           <Link
             href="/products"
-            className="hidden md:inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline"
+            className="hidden md:inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline shrink-0"
           >
             See more
             <ArrowRight className="w-4 h-4" />
@@ -55,7 +55,7 @@ export function HomeProducts() {
 
       {!error && products.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 px-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 px-3 sm:px-4">
             {products.map((product) => (
               <ProductCard key={product.ProductCode} product={product} />
             ))}

@@ -44,9 +44,9 @@ function OrderConfirmationContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 md:py-16 min-h-screen">
+    <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-10 md:py-16 min-h-screen">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-8 md:p-12 text-center border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-8 md:p-12 text-center border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="absolute inset-0 bg-green-100 dark:bg-green-900/30 rounded-full blur-xl" />
@@ -69,7 +69,7 @@ function OrderConfirmationContent() {
               Order Number
             </p>
             <div className="flex items-center justify-center gap-2">
-              <p className="text-xl md:text-2xl font-semibold text-brand-primary">
+              <p className="text-lg sm:text-xl md:text-2xl font-semibold text-brand-primary break-all">
                 {issueNo}
               </p>
               <button

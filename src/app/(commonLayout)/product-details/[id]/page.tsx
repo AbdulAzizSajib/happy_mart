@@ -3,7 +3,7 @@ import { ProductDetailClient } from "./ProductDetailClient";
 
 export async function generateStaticParams() {
   try {
-    const res = await fetchProducts({ page: 1, limit: 100 });
+    const res = await fetchProducts({ page: 1, paginate: 100 });
     return res.data.map((p) => ({ id: p.ProductCode }));
   } catch {
     // API unreachable at build time — emit no static pages. In dev the

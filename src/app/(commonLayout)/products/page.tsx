@@ -77,10 +77,10 @@ function ProductsContent() {
   else if (isCategoryFiltered) heading = categoryName ?? "Category";
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
-      <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white">
+    <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8 min-h-screen">
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-5 sm:mb-6">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white">
             {heading}
           </h1>
           {isSearching && (
@@ -149,7 +149,7 @@ function ProductsContent() {
       )}
 
       {products.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
           {products.map((product) => (
             <ProductCard key={product.ProductCode} product={product} />
           ))}

@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { MapPin, Phone, Mail } from "lucide-react";
 
+import { usePlantInfo } from "@/context/plant-info-context";
 import { cn } from "@/lib/utils";
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -41,16 +44,13 @@ interface FooterProps {
   tagline?: string;
   menuItems?: MenuItem[];
   copyright?: string;
-  bottomLinks?: {
-    text: string;
-    url: string;
-  }[];
+  bottomLinks?: { text: string; url: string }[];
 }
 
 const Footer = ({
   className,
-  brandName = "Happy Mart",
-  tagline = "Your one-stop shop for everything! Fresh groceries, daily essentials, and more — delivered to your door.",
+  brandName,
+  tagline,
   menuItems = [
     {
       title: "Information",
@@ -89,13 +89,24 @@ const Footer = ({
       ],
     },
   ],
-  copyright = "© 2026 Happy Mart. All rights reserved.",
+  copyright,
   bottomLinks = [
     { text: "Terms and Conditions", url: "#" },
     { text: "Privacy Policy", url: "#" },
     { text: "Cookie Policy", url: "#" },
   ],
 }: FooterProps) => {
+  const { plant } = usePlantInfo();
+
+  const resolvedBrandName = brandName ?? plant?.PlantName ?? "Happy Mart";
+  const resolvedTagline =
+    tagline ?? plant?.Remarks?.split("\n")[0] ?? "Your one-stop shop for everything!";
+  const resolvedAddress = plant?.PlantAddress ?? "House 12, Road 5, Dhaka 1205, Bangladesh";
+  const resolvedPhone = plant?.PlantPhone ?? "+880 1700-000000";
+  const resolvedEmail = plant?.PlantEmail ?? "support@happymart.com";
+  const resolvedCopyright =
+    copyright ?? `© ${new Date().getFullYear()} ${resolvedBrandName}. All rights reserved.`;
+
   const socialLinks = [
     { icon: FacebookIcon, url: "#", label: "Facebook" },
     { icon: InstagramIcon, url: "#", label: "Instagram" },
@@ -110,38 +121,38 @@ const Footer = ({
         className,
       )}
     >
-      <div className="container mx-auto px-4 pt-16 pb-8">
-        <div className="grid grid-cols-2 gap-10 lg:grid-cols-6">
+      <div className="container mx-auto px-4 pt-10 sm:pt-16 pb-8">
+        <div className="grid grid-cols-2 gap-8 sm:gap-10 md:grid-cols-3 lg:grid-cols-6">
           {/* Brand Column */}
-          <div className="col-span-2 mb-4 lg:mb-0">
+          <div className="col-span-2 md:col-span-3 lg:col-span-2 mb-2 lg:mb-0">
             <Link href="/" className="inline-block">
               <span className="text-3xl font-extrabold tracking-tight text-white">
-                {brandName}
+                {resolvedBrandName}
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">
-              {tagline}
+              {resolvedTagline}
             </p>
 
             {/* Contact Info */}
             <ul className="mt-6 space-y-3 text-sm text-zinc-400">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-primary" />
-                <span>House 12, Road 5, Dhaka 1205, Bangladesh</span>
+                <span>{resolvedAddress}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0 text-brand-primary" />
-                <a href="tel:+8801700000000" className="hover:text-white">
-                  +880 1700-000000
+                <a href={`tel:${resolvedPhone}`} className="hover:text-white">
+                  {resolvedPhone}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0 text-brand-primary" />
                 <a
-                  href="mailto:support@happymart.com"
+                  href={`mailto:${resolvedEmail}`}
                   className="hover:text-white"
                 >
-                  support@happymart.com
+                  {resolvedEmail}
                 </a>
               </li>
             </ul>
@@ -197,7 +208,7 @@ const Footer = ({
 
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col justify-between gap-4 border-t border-zinc-800 pt-6 text-sm text-zinc-500 md:flex-row md:items-center">
-          <p>{copyright}</p>
+          <p>{resolvedCopyright}</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             {bottomLinks.map((link, linkIdx) => (
               <li key={linkIdx}>

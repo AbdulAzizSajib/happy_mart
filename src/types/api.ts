@@ -121,3 +121,18 @@ export interface OrderTrackingResponse {
   message: string;
   data: OrderTrackingData;
 }
+
+export interface PlantInfo {
+  PlantCode: string;
+  PlantName: string;
+  PlantAddress: string;
+  PlantEmail: string;
+  PlantPhone: string;
+  Active: string;
+  ImagePath: string | null;
+  Remarks: string | null;
+}
+
+export interface PlantInfoResponse {
+  data: PlantInfo;
+}

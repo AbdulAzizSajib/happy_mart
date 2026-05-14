@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { fetchProductDetail, resolveImageUrl } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import type { ApiProduct, Variant } from "@/types/api";
 
@@ -41,6 +42,7 @@ export function ProductDetailClient({ productCode }: Props) {
     null,
   );
   const [activeImage, setActiveImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
@@ -136,6 +138,16 @@ export function ProductDetailClient({ productCode }: Props) {
 
   const inStock = (selectedVariant?.Stock ?? 0) > 0;
   const canAdd = selectedVariant !== null && inStock;
+  const maxQuantity = selectedVariant?.Stock ?? 1;
+  const canIncrement = inStock && quantity < maxQuantity;
+  const canDecrement = quantity > 1;
+
+  const decQuantity = () => {
+    if (canDecrement) setQuantity((q) => q - 1);
+  };
+  const incQuantity = () => {
+    if (canIncrement) setQuantity((q) => q + 1);
+  };
 
   const handleAdd = () => {
     if (!selectedVariant) {
@@ -146,17 +158,22 @@ export function ProductDetailClient({ productCode }: Props) {
       toast.error("Out of stock.");
       return;
     }
-    addItem({
-      productCode: product.ProductCode,
-      variantId: selectedVariant.VariantId,
-      name: product.ProductName,
-      sku: selectedVariant.SKU,
-      price: selectedVariant.SellingPrice,
-      image: images[0],
-      color: selectedVariant.Color,
-      size: selectedVariant.Size,
-    });
-    toast.success(`${product.ProductName} added to bag`);
+    addItem(
+      {
+        productCode: product.ProductCode,
+        variantId: selectedVariant.VariantId,
+        name: product.ProductName,
+        sku: selectedVariant.SKU,
+        price: selectedVariant.SellingPrice,
+        image: images[0],
+        color: selectedVariant.Color,
+        size: selectedVariant.Size,
+      },
+      quantity,
+    );
+    toast.success(
+      `${product.ProductName} ×${quantity} added to bag`,
+    );
   };
 
   const handleBuyNow = () => {
@@ -167,6 +184,7 @@ export function ProductDetailClient({ productCode }: Props) {
   const pickColor = (variant: Variant) => {
     setSelectedVariantId(variant.VariantId);
     setActiveImage(0);
+    setQuantity(1);
   };
 
   const pickSize = (size: string) => {
@@ -179,31 +197,32 @@ export function ProductDetailClient({ productCode }: Props) {
       ) ?? product.Variants.find((v) => v.Size === size);
     if (match) {
       setSelectedVariantId(match.VariantId);
+      setQuantity(1);
     }
   };
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
-        <nav className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 lg:py-10">
+        <nav className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
           <Link href="/" className="hover:text-brand-primary transition-colors">
             Home
           </Link>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           {product.CategoryName && (
             <>
               <span className="hover:text-brand-primary transition-colors">
                 {product.CategoryName}
               </span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </>
           )}
-          <span className="text-zinc-900 dark:text-white">
+          <span className="text-zinc-900 dark:text-white line-clamp-1">
             {product.ProductName}
           </span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-12">
           {/* Image Gallery */}
           <div className="space-y-4">
             <div className="relative w-full max-w-md mx-auto">
@@ -330,28 +349,40 @@ export function ProductDetailClient({ productCode }: Props) {
             {/* Size */}
             {allSizes.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm text-zinc-800 dark:text-zinc-200">Size</p>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-zinc-800 dark:text-zinc-200">
+                    Size
+                  </p>
+                  {!inStock && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-900">
+                      Out of Stock
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-3">
                   {allSizes.map((size) => {
                     const variantInColor = variantsForCurrentColor.find(
                       (v) => v.Size === size,
                     );
-                    const available =
-                      variantInColor !== undefined && variantInColor.Stock > 0;
+                    const exists = variantInColor !== undefined;
+                    const available = exists && variantInColor!.Stock > 0;
                     const active = selectedVariant?.Size === size;
                     return (
                       <button
                         key={size}
                         type="button"
-                        onClick={() => available && pickSize(size)}
-                        disabled={!available}
-                        className={`relative w-10 h-10 flex items-center justify-center text-sm transition-all ${
-                          active
-                            ? "rounded-full border border-zinc-900 dark:border-white text-zinc-900 dark:text-white"
-                            : available
-                              ? "text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
-                              : "text-zinc-400 line-through cursor-not-allowed"
-                        }`}
+                        onClick={() => exists && pickSize(size)}
+                        disabled={!exists}
+                        className={cn(
+                          "relative w-10 h-10 flex items-center justify-center text-sm transition-all",
+                          active &&
+                            "rounded-full border border-zinc-900 dark:border-white",
+                          available
+                            ? active
+                              ? "text-zinc-900 dark:text-white"
+                              : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+                            : "text-zinc-400 line-through decoration-zinc-400 decoration-1 cursor-not-allowed",
+                        )}
                       >
                         {size}
                       </button>
@@ -369,23 +400,31 @@ export function ProductDetailClient({ productCode }: Props) {
               <div className="flex items-center border border-zinc-300 dark:border-zinc-700 rounded-full">
                 <button
                   type="button"
-                  onClick={() => {
-                    /* server-managed via cart store; show 1 here */
-                  }}
-                  className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900"
+                  onClick={decQuantity}
+                  disabled={!canDecrement}
+                  className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Decrease"
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
-                <span className="px-4 py-1 text-sm font-medium">1</span>
+                <span className="px-4 py-1 text-sm font-medium min-w-8 text-center">
+                  {quantity}
+                </span>
                 <button
                   type="button"
-                  className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900"
+                  onClick={incQuantity}
+                  disabled={!canIncrement}
+                  className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Increase"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
+              {inStock && (
+                <span className="text-xs text-zinc-500">
+                  {maxQuantity} in stock
+                </span>
+              )}
             </div>
 
             {/* Size Guide accordion */}
