@@ -136,3 +136,16 @@ export interface PlantInfo {
 export interface PlantInfoResponse {
   data: PlantInfo;
 }
+
+export interface Banner {
+  BannerId: number;
+  Path: string;
+  Active: string;
+  StartDate: string | null;
+  EndDate: string | null;
+  Created_At: string;
+}
+
+export interface BannersResponse {
+  data: Banner[];
+}

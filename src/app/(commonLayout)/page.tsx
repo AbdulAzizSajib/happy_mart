@@ -1,17 +1,7 @@
-import { HeroBanner } from "@/components/layout/HeroBanner";
+import { DynamicHeroBanner } from "@/components/layout/DynamicHeroBanner";
 import { CategoryCarousel } from "@/components/layout/CategoryCarousel";
 import { Features } from "@/components/layout/Features";
 import { HomeProducts } from "@/components/layout/HomeProducts";
-import { withBasePath } from "@/lib/utils";
-
-// Banner data
-const bannerSlides = [
-  {
-    id: 1,
-    image: withBasePath("/ban2.jpg"),
-    alt: "New season apparel collection",
-  },
-];
 
 // Category data with Unsplash images
 const categories = [
@@ -98,7 +88,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Full-width hero, edge-to-edge */}
-      <HeroBanner slides={bannerSlides} />
+      <DynamicHeroBanner />
 
       {/* Full-width category carousel, edge-to-edge */}
       {/* <section className="mt-3">

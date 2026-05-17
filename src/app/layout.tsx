@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Your Everyday Lifestyle Partner | Clothes | Bags | Shoes | Quality Products at Affordable Price",
   icons: {
-    icon: "/fam.ico",
+    icon: "/fam.ico?v=2",
   },
 };
 

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-const BASE_PATH = "/happy-mart";
-// const BASE_PATH = "";
+// const BASE_PATH = "/happy-mart";
+const BASE_PATH = "";
 
 const nextConfig: NextConfig = {
   basePath: BASE_PATH,
@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "192.168.90.51",
         port: "3000",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ec.mis.digital",
         pathname: "/uploads/**",
       },
     ],

@@ -1,4 +1,6 @@
 import type {
+  Banner,
+  BannersResponse,
   Category,
   OrderPayload,
   OrderResponse,
@@ -111,4 +113,8 @@ export function fetchPlantInfo(plantCode = "P001"): Promise<PlantInfo> {
   return request<PlantInfoResponse>(
     `/site/plant/${encodeURIComponent(plantCode)}`,
   ).then((res) => res.data);
+}
+
+export function fetchBanners(): Promise<Banner[]> {
+  return request<BannersResponse>("/site/banner").then((res) => res.data ?? []);
 }
